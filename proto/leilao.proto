@@ -2,6 +2,11 @@ syntax = "proto3";
 
 package leilao;
 
+// Na estrutura message Atualizacao, definimos os dados enviados pelo servidor
+// na parte service, definimos os métodos remotos. O FazerLance recebe um lance 
+// e devolve uma resposta, enquanto o AcompanharLeilao utiliza streaming para enviar 
+// várias atualizações aos participantes.
+
 service Leilao {
     rpc FazerLance (LanceRequest) returns (LanceResponse);
     rpc AcompanharLeilao (Vazio) returns (stream Atualizacao);

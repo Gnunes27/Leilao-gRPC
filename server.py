@@ -77,7 +77,7 @@ class EstadoLeilao:
         self.lance_vencedor = None
 
     def adicionar_evento(self, mensagem, participante=None, valor=None):
-        """Adiciona um evento para todos os clientes que acompanham o stream."""
+        # Adiciona um evento para todos os clientes
         self.eventos.append(
             leilao_pb2.Atualizacao(
                 item=self.item,
@@ -88,7 +88,7 @@ class EstadoLeilao:
         )
 
     def encerrar_item(self, motivo):
-        """Deve ser chamada com self.lock adquirido."""
+       
         if self.fase in ("aguardando_proximo_item", "encerrado"):
             return
 
@@ -115,7 +115,7 @@ class EstadoLeilao:
         print(f"\n{mensagem}", flush=True)
 
     def verificar_tempo(self):
-        """Monitora os prazos mesmo quando ninguem acessa o painel web."""
+        
         while True:
             time.sleep(0.2)
             with self.lock:
