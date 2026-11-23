@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package leilao;
+
+service Leilao {
+    rpc FazerLance (LanceRequest) returns (LanceResponse);
+    rpc AcompanharLeilao (Vazio) returns (stream Atualizacao);
+}
+
+message Vazio {
+    string participante = 1;
+}
+
+message LanceRequest {
+    string participante = 1;
+    double valor = 2;
+}
+
+message LanceResponse {
+    bool sucesso = 1;
+    string mensagem = 2;
+}
+
+message Atualizacao {
+    string item = 1;
+    string participante = 2;
+    double valor = 3;
+    string mensagem = 4;
+}

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leilão BSI</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --panel: #141c30;
+      --panel-2: #1b2740;
+      --line: #293653;
+      --text: #edf2ff;
+      --muted: #9eacc8;
+      --accent: #66e0b2;
+      --gold: #ffd166;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, Arial, sans-serif;
+    }
+
+    header {
+      padding: 28px max(22px, calc((100% - 1120px) / 2));
+      border-bottom: 1px solid var(--line);
+      background: #10182a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      letter-spacing: -.04em;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 5px;
+      font-size: .95rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .timer {
+      min-width: 132px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      text-align: center;
+    }
+
+    .timer-label {
+      color: var(--muted);
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .timer-value {
+      color: var(--gold);
+      font-size: 1.65rem;
+      line-height: 1.25;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-status {
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-size: .9rem;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 14px var(--accent);
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 28px auto 60px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px;
+      min-width: 0;
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      font-size: 1.08rem;
+    }
+
+    .item-image {
+      min-height: 270px;
+      border: 1px dashed #435575;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #1d2b45, #111a2d);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: var(--muted);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .item-image img {
+      width: 100%;
+      height: 270px;
+      object-fit: contain;
+    }
+
+    .placeholder-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .item-description {
+      margin: 10px 0 18px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--gold);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: .92rem;
+    }
+
+    .item-name {
+      margin: 18px 0 4px;
+      font-size: 1.35rem;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .current-label {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-top: 22px;
+    }
+
+    .current-value {
+      color: var(--accent);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -.04em;
+    }
+
+    .leader {
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(255, 209, 102, .09);
+      border: 1px solid rgba(255, 209, 102, .28);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .leader strong {
+      color: var(--gold);
+    }
+
+    .bid-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      background: var(--panel-2);
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+    }
+
+    .bid.top {
+      border-color: var(--gold);
+      background: rgba(255, 209, 102, .08);
+    }
+
+    .bid-name {
+      font-weight: 650;
+    }
+
+    .bid-time {
+      color: var(--muted);
+      font-size: .8rem;
+      margin-top: 3px;
+    }
+
+    .bid-value {
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .top-tag {
+      color: var(--gold);
+      font-size: .72rem;
+      font-weight: 800;
+      margin-left: 6px;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 28px 10px;
+    }
+
+    .footer-stats {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .stat {
+      background: var(--panel-2);
+      padding: 10px 13px;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .stat b {
+      color: var(--text);
+    }
+
+    @media (max-width: 760px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .item-image {
+        min-height: 210px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1>Leilão de Budegas BSI</h1>
+      <div class="subtitle">As melhores ofertas do mercado</div>
+    </div>
+    <div class="header-right">
+      <div class="timer">
+        <div class="timer-label">Tempo restante</div>
+        <div class="timer-value" id="timer-value">05:00</div>
+        <div class="timer-status" id="timer-status">Aguardando participantes</div>
+      </div>
+      <div class="status"><span class="dot" id="status-dot"></span><span id="status-text">Conectando...</span></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="layout">
+      <section class="panel">
+        <h2 class="section-title">Item em leilão</h2>
+        <div class="item-image" id="item-image">
+          <div><span class="placeholder-icon">▧</span>Imagem </div>
+        </div>
+        <h3 class="item-name" id="item-name">Carregando item...</h3>
+        <div class="item-description" id="item-description">Descrição do item...</div>
+        <div class="current-label">Lance inicial</div>
+        <div class="current-value" id="initial-value">R$ 150,00</div>
+        <div class="current-label">Maior lance atual</div>
+        <div class="current-value" id="current-value">R$ 150,00</div>
+        <div class="leader">
+          <span>Na frente</span>
+          <strong id="leader-name">Leiloeiro</strong>
+        </div>
+        <div class="footer-stats">
+          <div class="stat">Lances: <b id="bid-count">0</b></div>
+          <div class="stat">Participantes: <b id="participant-count">0</b></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 class="section-title">Lances recentes</h2>
+        <div class="bid-list" id="bid-list">
+          <div class="empty">Aguardando os primeiros lances...</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const moeda = valor => {
+      const numero = Number(valor);
+
+      return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      }).format(Number.isFinite(numero) ? numero : 0);
+    };
+
+    async function atualizarPainel() {
+      const dot = document.getElementById('status-dot');
+      const status = document.getElementById('status-text');
+
+      try {
+        const resposta = await fetch('api/estado', { cache: 'no-store' });
+        if (!resposta.ok) throw new Error('Falha ao consultar o servidor');
+        const dados = await resposta.json();
+
+        dot.style.background = 'var(--accent)';
+        dot.style.boxShadow = '0 0 14px var(--accent)';
+        status.textContent = 'Ao vivo';
+
+        const segundos = Math.max(0, Number(dados.tempo_restante) || 0);
+        const minutosFormatados = String(Math.floor(segundos / 60)).padStart(2, '0');
+        const segundosFormatados = String(segundos % 60).padStart(2, '0');
+        document.getElementById('timer-value').textContent =
+          `${minutosFormatados}:${segundosFormatados}`;
+        document.getElementById('timer-status').textContent =
+          dados.status_leilao || 'Aguardando participantes';
+
+        document.getElementById('item-name').textContent = dados.item;
+        document.getElementById('item-description').textContent =
+          dados.descricao || 'Sem descrição para este item.';
+        const maiorLance = Number(dados.maior_lance);
+        const lanceInicialRecebido = Number(dados.lance_inicial);
+
+        const lanceInicial = Number.isFinite(lanceInicialRecebido)
+          ? lanceInicialRecebido
+          : (Number.isFinite(maiorLance) ? maiorLance : 0);
+
+        const lanceAtual = Number.isFinite(maiorLance)
+          ? maiorLance
+          : lanceInicial;
+
+        document.getElementById('initial-value').textContent =
+          moeda(lanceInicial);
+
+        document.getElementById('current-value').textContent =
+          moeda(lanceAtual);
+        document.getElementById('leader-name').textContent = dados.lider;
+        document.getElementById('bid-count').textContent = dados.total_lances;
+        document.getElementById('participant-count').textContent = dados.participantes.length;
+
+        const areaImagem = document.getElementById('item-image');
+        if (dados.fase === 'aguardando_proximo_item') {
+          const resultado = document.createElement('div');
+          resultado.style.width = '100%';
+          resultado.style.textAlign = 'center';
+
+          const titulo = document.createElement('h2');
+          titulo.textContent = 'LEILAO ENCERRADO';
+          titulo.style.color = 'var(--gold)';
+
+          const vencedor = document.createElement('p');
+          vencedor.textContent = dados.vencedor
+            ? `Vencedor: ${dados.vencedor}`
+            : 'Nenhum lance foi registrado.';
+
+          const lance = document.createElement('p');
+          lance.textContent = dados.vencedor
+            ? `Ultimo lance: ${moeda(dados.lance_vencedor)}`
+            : 'Sem lance vencedor';
+
+          const aguardando = document.createElement('p');
+          aguardando.textContent = 'Esperando proximo item...';
+          aguardando.className = 'muted';
+
+          resultado.append(titulo, vencedor, lance, aguardando);
+          areaImagem.replaceChildren(resultado);
+        } else if (dados.imagem) {
+          const img = document.createElement('img');
+          img.src = dados.imagem;
+          img.alt = dados.item;
+          areaImagem.replaceChildren(img);
+        } else {
+          const placeholder = document.createElement('div');
+          placeholder.innerHTML = '<span class="placeholder-icon">▧</span>Item em leilao';
+          areaImagem.replaceChildren(placeholder);
+        }
+
+        const lista = document.getElementById('bid-list');
+        lista.replaceChildren();
+
+        if (!dados.lances.length) {
+          const vazio = document.createElement('div');
+          vazio.className = 'empty';
+          vazio.textContent = 'Aguardando os primeiros lances...';
+          lista.appendChild(vazio);
+        } else {
+          dados.lances.forEach((lance, indice) => {
+            const linha = document.createElement('div');
+            linha.className = 'bid' + (indice === 0 ? ' top' : '');
+
+            const info = document.createElement('div');
+            const nome = document.createElement('div');
+            nome.className = 'bid-name';
+            nome.textContent = lance.participante + (indice === 0 ? '  ★ NA FRENTE' : '');
+
+            const horario = document.createElement('div');
+            horario.className = 'bid-time';
+            horario.textContent = lance.horario;
+
+            const valor = document.createElement('div');
+            valor.className = 'bid-value';
+            valor.textContent = moeda(lance.valor);
+
+            info.append(nome, horario);
+            linha.append(info, valor);
+            lista.appendChild(linha);
+          });
+        }
+      } catch (erro) {
+        dot.style.background = '#ff6b6b';
+        dot.style.boxShadow = 'none';
+        status.textContent = 'Sem conexão';
+      }
+    }
+
+    atualizarPainel();
+    setInterval(atualizarPainel, 1200);
+  </script>
+</body>
+
+</html>
